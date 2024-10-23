@@ -3,6 +3,7 @@
 Script that reads stdin line by line and computes metrics.
 """
 import sys
+import re
 
 def print_metrics(status_counts, total_size):
     """
@@ -26,21 +27,21 @@ line_counter = 0
 try:
     for log_line in sys.stdin:
         line_counter += 1
-        if line_counter % 10 == 0:
-            print_metrics(status_counts, total_file_size)
 
-        elements = log_line.split(" ")
-        try:
-            total_file_size += int(elements[-1])
-        except (ValueError, IndexError):
-            continue
-        try:
-            status_code = elements[-2]
+        match = re.match(r'(\d+\.\d+\.\d+\.\d+) - \[([^\]]+)\] "GET /projects/260 HTTP/1.1" (\d{3}) (\d+)', log_line)
+        if match:
+            status_code = match.group(3)
+            file_size = int(match.group(4))
+
+            total_file_size += file_size
             if status_code in status_counts:
                 status_counts[status_code] += 1
-        except IndexError:
-            continue
-    print_metrics(status_counts, total_file_size)
+            
+            if line_counter % 10 == 0:
+                print_metrics(status_counts, total_file_size)
+
 except KeyboardInterrupt:
     print_metrics(status_counts, total_file_size)
     sys.exit(0)
+
+print_metrics(status_counts, total_file_size)
