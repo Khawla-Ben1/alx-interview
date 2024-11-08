@@ -10,6 +10,7 @@ def print_solution(board):
                 solution.append([row, col])
     print(solution)
 
+
 def is_safe(board, row, col):
     for i in range(row):
         if board[i] == col or \
@@ -17,6 +18,7 @@ def is_safe(board, row, col):
            board[i] + i == col + row:
             return False
     return True
+
 
 def solve_nqueens(board, row, N):
     if row == N:
@@ -28,6 +30,7 @@ def solve_nqueens(board, row, N):
             board[row] = col
             solve_nqueens(board, row + 1, N)
             board[row] = -1  # backtrack
+
 
 def main():
     if len(sys.argv) != 2:
